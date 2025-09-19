@@ -1,0 +1,12 @@
+{
+  "appId": "",
+  "appDisplayName": "Code First App",
+  "description": null,
+  "environmentId": "18571ae9-2db1-e2fc-97ef-2398a6944c06",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "logoPath": "Default",
+  "localAppUrl": "http://localhost:3000/",
+  "connectionReferences": {},
+  "databaseReferences": {}
+}

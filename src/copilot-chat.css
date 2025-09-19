@@ -1,0 +1,24 @@
+.copilot-chat-wrapper { position: fixed; bottom: 0; right: 1rem; width: 360px; height: 480px; max-height: calc(100vh - 1.5rem); background: #0d1821; border:1px solid #233845; display:flex; flex-direction:column; border-radius:10px 10px 0 0; box-shadow:0 6px 28px -6px rgba(0,0,0,0.55); font-family: system-ui, sans-serif; z-index: 1200; overflow: hidden; }
+.copilot-chat-wrapper.collapsed { height:42px; overflow:hidden; }
+.copilot-chat-header { padding:10px 14px; font-size:14px; font-weight:600; letter-spacing:.5px; background:#132430; border-bottom:1px solid #223742; color:#e2edf3; display:flex; align-items:center; justify-content:space-between; }
+.copilot-chat-status { padding:10px 14px; font-size:12px; color:#8fb3c9; }
+.copilot-chat-error { padding:10px 14px; font-size:12px; color:#ffb4b4; background:#3a1013; border-top:1px solid #5d1e23; }
+.copilot-chat-body { flex:1; display:flex; min-height:0; }
+#copilot-webchat-container { flex:1; display:flex; flex-direction:column; min-height:0; }
+#copilot-webchat-container > * { flex:1; min-height:0; }
+.copilot-chat-initializing { padding:12px; font-size:12px; color:#8fb3c9; }
+/* Ensure WebChat content wraps and does not overflow horizontally */
+#copilot-webchat-container * { box-sizing: border-box; }
+#copilot-webchat-container .webchat__stacked-layout__message { max-width: 300px; word-wrap: break-word; overflow-wrap: anywhere; }
+#copilot-webchat-container .webchat__row { flex-wrap: wrap; }
+/* Force transcript area to scroll inside available height */
+#copilot-webchat-container .webchat__basic-transcript { flex:1 !important; min-height:0; overflow-y:auto; }
+
+@media (max-width: 500px) {
+	.copilot-chat-wrapper { width: 100vw; right: 0; left: 0; border-radius: 0; }
+}
+/* Internal minimize button */
+.copilot-min-btn { margin-left:auto; background:transparent; border:none; color:#8fb3c9; cursor:pointer; font-size:16px; line-height:1; padding:2px 6px; border-radius:4px; }
+.copilot-min-btn:hover { background:#1a2d39; color:#d2e6f1; }
+.copilot-chat-wrapper.minimized { height:42px; max-height:42px; overflow:hidden; }
+.copilot-chat-wrapper.minimized .copilot-chat-body { display:none; }
