@@ -16,9 +16,9 @@ An interactive educational Single Page Application showcasing upstream / midstre
 3. Features
 4. Getting Started (Prerequisites & Setup)
 5. Development Workflow
-6. Deployment / Publishing to Power Apps
+6. Deployment / Publishing
 7. Project Structure
-8. 3D & Animation Implementation Notes
+8. 3D & Animation Notes
 9. Preview Limitations & Security Considerations
 10. Troubleshooting
 11. Scripts Reference
@@ -32,7 +32,7 @@ This portal demonstrates how a traditional front‑end SPA can be enriched with 
 * Toggle between Learn and Quiz modes
 * Explore a realistic pump assembly (explode / assemble)
 * View simulated live metrics with animated deltas
-* Interact with an embedded Copilot-style chat assistant
+* (Optional) Interact with an embedded Copilot-style chat assistant (`CopilotChat.tsx` – only include/build if Copilot Studio integration is desired)
 
 The application is powered locally by Vite and—once published—runs inside the Power Apps host with authentication, governance, and policy enforcement handled by the platform.
 
@@ -69,7 +69,7 @@ Quiz / Learn Modes | Clue-based identification & animated reveal vs. detail pane
 3D Pump Assembly | Explode/assemble sequence, impeller spin group, procedural blur texture
 Mechanical Accuracy | Bolt repositioning, shaft length & centerline alignment, seal + housing detail
 Metrics Simulation | Smoothly interpolated production metrics with pulse animations
-Chat Integration | Copilot Studio embedded React chat component
+Chat Integration | (Optional) `CopilotChat.tsx` React component for Copilot Studio embedding (omit if not integrating chat)
 Brightness & Theme | Adjustable exposure (tone mapping) + dark/light toggle
 Focus Highlight | Emissive color & scale pulse on selection
 
@@ -142,9 +142,8 @@ Use this one ordered list—no duplicate command list appears elsewhere.
 11. (Enhancements Added Post-Quickstart) Add or verify optional libraries introduced by this solution:
 	 * Three.js (`three`) for procedural 3D scenes.
 	 * GSAP (`gsap`) for tweening & highlight pulses (lightweight shim types used locally).
-	 * Copilot chat integration component (`CopilotChat.tsx`).
+	 * (Optional) Copilot chat integration component (`CopilotChat.tsx`) for Copilot Studio (exclude if chat not required).
 	 * (Optional) Beast Mode 3.1 custom chat mode for structured AI pairing.
-	 * (Optional) Copilot Studio Web Chat sample integration (see 5.2).
 
 Environment Validation:
 The `dev` / `build` scripts run `scripts/validateEnv.mjs` first. If required variables (for enabled features) are missing, the command exits with an error so you discover misconfiguration early.
@@ -205,7 +204,7 @@ Path | Description
 `src/components/DrillingRigScene.tsx` | Drilling rig visualization
 `src/components/ThreeDashboard.tsx` | Production pad 3D scene
 `src/components/LifecycleMap.tsx` | Value-chain animated map
-`src/components/CopilotChat.tsx` | Chat assistant component
+`src/components/CopilotChat.tsx` | (Optional) Copilot Studio chat assistant component (safe to remove if not using chat)
 `src/gsapHelpers.ts` | Animation helper utilities (stagger & pulse)
 `src/types/gsap-local.d.ts` | Minimal GSAP type declarations (shim)
 
