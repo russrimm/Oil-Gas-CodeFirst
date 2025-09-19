@@ -184,32 +184,24 @@ Usage Tips:
 Disclaimer: Beast Mode is an opinionated community workflow prompt, not an official Microsoft feature. Review contents before pasting and adapt to your org’s security & contribution guidelines.
 
 ### 5.2 (Optional) Copilot Studio Web Chat React Integration
-This project includes a chat component (`CopilotChat.tsx`). For deeper customization or to re-create it from scratch, consult the official sample:
-https://github.com/microsoft/Agents/tree/main/samples/nodejs/copilotstudio-webchat-react
+This project’s `CopilotChat.tsx` component was derived from the official Copilot Studio / Web Chat sample. For implementation guidance, refer directly to the authoritative documentation instead of the (now removed) procedural steps:
 
-High-Level Integration Steps (summary):
-1. In Copilot Studio, create / configure your agent (topics, actions, system messages).
-2. Enable a supported web channel and obtain the required token mechanism (e.g., Direct Line / Azure AI Studio provisioning depending on current platform guidance).
-3. Add required dependency from the sample (e.g., the Web Chat React package exported in the sample or `botframework-webchat` if using classic channel) and any auth helper utilities.
-4. Create a React wrapper component that:
-	* Acquires / refreshes a short-lived token via a lightweight backend (avoid exposing secrets in the client bundle).
-	* Passes styling, locale, and avatar / branding props to the WebChat component.
-	* Subscribes to activity events if you need telemetry (conversation start, handoff, errors).
-5. Embed the wrapper inside your SPA layout (e.g., in `SupportPortal.tsx`) and guard render until host + token are ready.
+Key Official / Reference Links:
+* Sample (GitHub): https://github.com/microsoft/Agents/tree/main/samples/nodejs/copilotstudio-webchat-react
+* Copilot Studio docs (landing): https://learn.microsoft.com/microsoft-copilot-studio/
+* (Bot Framework) Web Chat channel concepts: https://learn.microsoft.com/azure/bot-service/bot-service-channel-connect-webchat
+* Authentication & tokens (Bot Framework): https://learn.microsoft.com/azure/bot-service/rest-api/bot-framework-rest-direct-line-3-0-authentication
 
-Security & Ops Considerations:
-* Never commit channel secrets or Direct Line keys; proxy them server-side.
-* Rate-limit token issuance endpoints and apply CORS constraints.
-* Sanitize / log conversation events only after validating PII & compliance requirements.
+Recommended Reading Order:
+1. Copilot Studio overview (understand agent configuration / publishing).
+2. Web Chat channel docs (embedding fundamentals and token model).
+3. Sample repository code (practical React wrapper + styling patterns).
 
-Styling Tips:
-* Use CSS variables or theme object to align with the portal’s dark/light toggle.
-* Provide a compact transcript height for smaller viewports; allow expansion.
+Security Reminder: Always obtain short‑lived tokens server-side; never embed static Direct Line or channel secrets in client code. See section 5.3 for optional Entra app registration & proxy considerations.
 
-Fallback Strategy:
-If token fetch fails, display a minimal retry panel with a link to alternative support resources (email or knowledge base) to maintain user trust.
+Styling / Theming: Follow the Bot Framework Web Chat theming guidance in official docs; map colors to this portal’s dark/light theme variables instead of hard-coding.
 
-Disclaimer: Channel availability and token acquisition steps can evolve; always verify the latest Copilot Studio / Bot Framework guidance before production deployment.
+Note: Detailed step-by-step instructions were intentionally removed here to avoid divergence from the official docs and reduce maintenance overhead.
 
 ### 5.3 (Optional) Entra App Registration (Delegated Access for Copilot Studio Token Proxy)
 If your Copilot Studio embedding scenario needs a secure server-side token exchange (recommended for production so you never ship static secrets), create an Entra (Azure AD) app registration and grant the minimum delegated permissions. This enables a lightweight proxy API to request short‑lived conversation or Direct Line style tokens on behalf of authenticated users.
@@ -240,31 +232,9 @@ ENTRA_CLIENT_SECRET=<SECRET_VALUE>
 COPILOT_CHAT_SERVICE_BASE_URL=https://your-proxy-host
 ```
 
-Example (illustrative) Express route (do not commit secrets; read from process.env):
-```typescript
-app.get('/api/chat/token', async (req, res) => {
-  // 1. Validate user auth (e.g., via bearer token middleware/MSAL verification)
-	// 2. Call Copilot Studio / Bot channel token endpoint with app registration credentials from process.env.ENTRA_CLIENT_ID / SECRET
-  // 3. Return ephemeral token
-  res.json({ token: 'eyJ...shortLived', expiresInSeconds: 1800 });
-});
-```
-
-Security Recommendations:
-* Principle of least privilege: Only grant scopes actually required for token issuance.
-* Rotate client secrets; prefer certificate-based auth if confidential flows are supported. Maintain them in Azure Key Vault or GitHub Actions secrets.
-* Enforce CORS to allowed origins (Power Apps host domain + local dev origin).
-* Implement server-side rate limiting (token minting abuse protection).
-* Log token requests (excluding token values) for audit.
-
 Power Apps Hosting Considerations:
 * If you host the proxy externally (Azure App Service / Function), ensure network egress policies permit calls from users’ browsers.
 * If embedding inside Power Apps, keep your proxy base URL configurable via environment variable or build-time injection.
-
-Maintenance Checklist:
-* Review Entra audit logs for anomalous token minting spikes.
-* Periodically re-validate Copilot Studio permission naming (preview endpoints can change).
-* Add automated secret expiry alerts (Key Vault or GitHub OIDC workflows).
 
 Disclaimer: Exact Copilot Studio delegated scope names and token issuance endpoints may change while in preview. Always re-check official documentation before production enablement. Never commit tenant IDs or client secrets—use environment variables only.
 
