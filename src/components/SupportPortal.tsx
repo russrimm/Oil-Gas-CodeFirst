@@ -265,7 +265,7 @@ export function SupportPortal() { // repurposed as learning portal
               <li key={c.key} className={`${c.key === focus ? 'active' : ''} concept-item`}>
                 <button onClick={() => { setFocus(c.key); setMode('learn'); setSidebarOpen(false); }} className="concept-button">
                   <div className="subject-line">{c.label}</div>
-                  <div className="meta-line">{c.category}</div>
+                  <div className="meta-line"><span className="purpose-label">Purpose:</span> {c.category}</div>
                   <div className="description-line concept-summary">{c.summary}</div>
                 </button>
               </li>
@@ -314,7 +314,7 @@ export function SupportPortal() { // repurposed as learning portal
             <motion.div key={mode + (currentConcept?.key || '')} initial={{ opacity:0, x:25 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:-20 }} transition={{ duration:.45 }} className="learning-panel-wrapper">
               {mode === 'learn' && currentConcept && (
                 <div className="ticket-detail concept-detail" ref={conceptRef}>
-                  <div className="header-row"><h2 className="concept-title">{currentConcept.label}</h2><span className={`status-badge`}>{currentConcept.category}</span></div>
+                  <div className="header-row"><h2 className="concept-title">{currentConcept.label}</h2><span className={`status-badge`}><span className="purpose-label-inline">Purpose:</span> {currentConcept.category}</span></div>
                   <p className="concept-summary-text">{currentConcept.summary}</p>
                   <p className="concept-details-text">{currentConcept.details}</p>
                   {scene === 'lifecycle' ? (

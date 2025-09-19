@@ -180,6 +180,11 @@ html, body, #root { height:100%; }
 .concept-scroll { overflow-y:auto; max-height:calc(100dvh - 180px); }
 .concept-item .concept-button { width:100%; text-align:left; }
 .concept-summary { opacity:.7; font-size:.65rem; }
+.concept-button .purpose-label { text-transform:uppercase; font-size:.6rem; letter-spacing:.75px; margin-right:4px; color:var(--accent-glow); opacity:.95; }
+.concept-button .meta-line { font-size:.72rem; opacity:.85; display:flex; align-items:center; gap:.25rem; line-height:1.15; }
+.purpose-label-inline { text-transform:uppercase; font-size:.6rem; letter-spacing:.75px; margin-right:6px; color:var(--warning); filter:drop-shadow(0 0 2px rgba(255,160,40,0.3)); }
+.status-badge { background:linear-gradient(135deg,#2d3b47,#1e262e); padding:.3rem .55rem; border-radius:6px; font-size:.65rem; letter-spacing:.7px; display:inline-flex; align-items:center; gap:.35rem; font-weight:600; }
+.portal-layout[data-theme='light'] .status-badge { background:linear-gradient(135deg,#e2e8f0,#d0d9e2); }
 .learning-panel-wrapper { position:relative; }
 .concept-detail { display:flex; flex-direction:column; gap:.75rem; }
 .concept-title { margin:0; }

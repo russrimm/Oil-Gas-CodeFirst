@@ -46,6 +46,7 @@ export function AssemblyExplodedScene({ focus = null, onSelect, onReady, brightn
     if (focus) {
       const tgt = parts.find(p => p.key === focus);
       if (tgt) {
+        const highlightHex = 0xffa640; // warm amber (better detail retention vs. saturated blue)
         tgt.group.traverse((o:any) => {
           if (o.isMesh && o.material && o.material.emissive) {
             const m = o.material as THREE.MeshStandardMaterial & { userData:any };
@@ -53,12 +54,20 @@ export function AssemblyExplodedScene({ focus = null, onSelect, onReady, brightn
               m.userData.__origE = m.emissive.getHex?.() ?? 0x000000;
               m.userData.__origEI = (m as any).emissiveIntensity ?? 1;
             }
-            m.emissive.setHex(0x1f6feb);
-            (m as any).emissiveIntensity = 1.1;
+            // Blend original emissive with highlight to preserve some underlying tone
+            try {
+              const orig = new THREE.Color(m.userData.__origE);
+              const hl = new THREE.Color(highlightHex);
+              orig.lerp(hl, 0.65); // 65% toward highlight color
+              m.emissive.set(orig);
+            } catch {
+              m.emissive.setHex(highlightHex);
+            }
+            (m as any).emissiveIntensity = Math.min((m.userData.__origEI ?? 0.3) + 0.25, 0.75); // modest bump only
           }
         });
-        // Gentle pulse
-        gsap.fromTo(tgt.group.scale, { x:1, y:1, z:1 }, { x:1.06, y:1.06, z:1.06, yoyo:true, repeat:1, duration:0.5, ease:'sine.inOut' });
+        // Gentle pulse (slightly reduced scale to avoid obscuring edges)
+        gsap.fromTo(tgt.group.scale, { x:1, y:1, z:1 }, { x:1.04, y:1.04, z:1.04, yoyo:true, repeat:1, duration:0.55, ease:'sine.inOut' });
       }
     }
   }, [focus]);

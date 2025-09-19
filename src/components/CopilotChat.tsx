@@ -189,7 +189,7 @@ export function CopilotChat({ collapsed }: { collapsed?: boolean }) {
 
   return (
   <div ref={wrapperRef} className={`copilot-chat-wrapper ${collapsed ? 'collapsed' : ''} ${minimized ? 'minimized' : ''}`}> 
-      <div className="copilot-chat-header">Copilot Assistant
+  <div className="copilot-chat-header">Expert Oil Agent
         <button type="button" className="copilot-min-btn" aria-label={minimized ? 'Restore Copilot chat' : 'Minimize Copilot chat'} onClick={()=> setMinimized(m=>!m)}>
           {minimized ? '▢' : '–'}
         </button>
