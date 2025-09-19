@@ -36,6 +36,16 @@ This portal demonstrates how a traditional front‑end SPA can be enriched with 
 
 The application is powered locally by Vite and—once published—runs inside the Power Apps host with authentication, governance, and policy enforcement handled by the platform.
 
+### 1.1 What Are Code Apps?
+Power Apps *code apps* (Preview) let you host a fully custom Single Page Application (React/Vue/etc.) inside the managed Power Apps platform. You retain full control over UI & logic while inheriting:
+* Microsoft Entra authentication
+* Access to 1,500+ connectors via generated models/services
+* Managed environment governance (DLP, sharing limits, conditional access)
+* Simplified packaging & publishing through the PAC CLI (`pac code push`)
+
+Your app + SDK + host form three logical runtime layers. Connector calls flow:
+`Component → Generated Service Proxy → Power Apps SDK → Connector Backend → Data Source`.
+
 ---
 ## 2. Architecture
 Layer | Role | Implementation
@@ -49,8 +59,6 @@ Build Tooling | Bundling & HMR | Vite + TypeScript
 Publishing / Host Integration | Auth, run, push | PAC CLI (`pac code init`, `pac code run`, `pac code push`)
 
 Runtime (future connector usage): `Component → Generated Service Proxy → Power Apps SDK → Connector Backend → Data Source`.
-
-Extended architectural commentary lives in `docs/END_TO_END_TRANSCRIPT.md`.
 
 ---
 ## 3. Features
@@ -67,62 +75,209 @@ Focus Highlight | Emissive color & scale pulse on selection
 
 ---
 ## 4. Getting Started
-### 4.1 Prerequisites
-Install / verify:
-* **Node.js** (LTS)
+### 4.1 Prerequisites (Tools & Environment)
+Install / verify locally:
+* **Node.js (LTS)**
 * **Git**
 * **Visual Studio Code**
-* **Power Platform Tools VS Code Extension** (for `pac cli`)
+* **Power Platform CLI (pac)** (install via MSI, npm global, or VS Code extension)
+* *(Optional)* **Power Platform Tools VS Code Extension** for convenience commands
+* *(Optional)* **Beast Mode 3.1 VS Code Chat Mode** – opinionated custom chat mode that enforces deep planning, todo-driven execution, recursive web research, and persistent memory for fewer half-finished agent turns (see section 5.1)
+* *(Optional)* **Copilot Studio Web Chat React Integration Sample** – reference implementation for embedding a Copilot Studio agent via React WebChat: https://github.com/microsoft/Agents/tree/main/samples/nodejs/copilotstudio-webchat-react (see section 5.2)
+* *(Optional)* **Entra App Registration for Copilot Studio** – if you plan to secure a custom token proxy for the embedded Copilot Studio agent (see section 5.3)
 
+Environment (Admin actions):
+1. Open **Power Platform admin center** → target environment.
+2. Go to **Settings → Product → Features**.
+3. Enable **Power Apps code apps** toggle.
+4. Confirm target users have **Power Apps Premium** licenses (trial acceptable for evaluation).
 
-Environment (Admin):
-1. Enable *Power Apps code apps* feature in target environment (Admin Center → Environment → Settings → Product → Features).
-2. Ensure intended users have a Power Apps Premium license (trial acceptable for evaluation).
+> Re-check official docs before onboarding new developers—preview requirements may shift.
 
-### 4.2 Clone & Install
-```powershell
-git clone <your-repo-url>
-cd AppFromScratch
-npm install
-```
+### 4.2 Initialization & Installation (Single Source)
+Use this one ordered list—no duplicate command list appears elsewhere.
 
-### 4.3 Authenticate & Initialize (first time)
-```powershell
-pac auth create --environment <ENVIRONMENT_GUID>
-pac code init --displayName "Energy Operations Learning Portal"
-```
+1. (Create) If starting from scratch: `npm create vite@latest` (choose React + TypeScript) OR clone this repo (already configured).
+2. (Auth) Authenticate the Power Platform CLI to your target environment:
+	```powershell
+	pac auth create --environment <ENVIRONMENT_GUID>
+	```
+	Optional alternative: `pac auth create` then `pac env select -env <ENV_URL>`.
+3. (Initialize) Generate / update code app metadata (creates `power.config.json`):
+	```powershell
+	pac code init --displayName "Oil & Gas Operations Training Portal"
+	```
+4. (SDK Dependency) Ensure the Power Apps SDK is installed (skip if already in `package.json`):
+	```powershell
+	npm install @microsoft/power-apps
+	```
+5. (Provider) Confirm `src/PowerProvider.tsx` calls the SDK `initialize()` before rendering children and that `main.tsx` wraps `<App />` with `<PowerProvider>`.
+6. (Dev Script) Verify `package.json` contains a dev script that starts both the local host bridge and Vite. Example:
+	```json
+	{
+	  "scripts": {
+		 "dev": "start pac code run && vite",
+		 "build": "tsc -b && vite build"
+	  }
+	}
+	```
+	If you prefer concurrency tooling you can replace with `concurrently "pac code run" "vite"`.
+7. (Install) Install all project dependencies:
+	```powershell
+	npm install
+	```
+8. (Run Locally) Start the development environment:
+	```powershell
+	npm run dev
+	```
+	This should spin up Vite AND the `pac code run` local server (for connector model loading once connectors are added).
+9. (Build) Produce an optimized build:
+	```powershell
+	npm run build
+	```
+10. (Publish) Push compiled assets to the Power Apps host:
+	 ```powershell
+	 pac code push
+	 ```
+	 The command returns a URL; you can also open https://make.powerapps.com to run/share the app.
+11. (Enhancements Added Post-Quickstart) Add or verify optional libraries introduced by this solution:
+	 * Three.js (`three`) for procedural 3D scenes.
+	 * GSAP (`gsap`) for tweening & highlight pulses (lightweight shim types used locally).
+	 * Copilot chat integration component (`CopilotChat.tsx`).
+	 * (Optional) Beast Mode 3.1 custom chat mode for structured AI pairing.
+	 * (Optional) Copilot Studio Web Chat sample integration (see 5.2).
 
-> `pac code init` creates/updates `power.config.json`. Do **not** hand-edit this file.
+Environment Validation:
+The `dev` / `build` scripts run `scripts/validateEnv.mjs` first. If required variables (for enabled features) are missing, the command exits with an error so you discover misconfiguration early.
+
+> Note: This ordered list is the canonical, single location for setup commands to avoid duplication and drift.
 
 ---
 ## 5. Development Workflow
-Local development uses Vite for the SPA and `pac code run` to emulate host integration (especially once connectors are added).
+1. Run `npm run dev` for hot reload; ensure the script starts both Vite and (optionally) `pac code run` for connector model loading (future use).
+2. Adjust scenes / components; Three.js and GSAP changes reflect live via HMR.
+3. Commit changes; repeat until feature stable.
+4. Execute `npm run build` to validate type & production build output.
 
-Add (or confirm) a `dev` script in `package.json` that runs both:
-```json
-{
-  "scripts": {
-    "dev": "concurrently \"vite\" \"pac code run\"",
-    "build": "tsc -b && vite build"
-  }
-}
+### 5.1 (Optional) Agentic Pairing: Beast Mode 3.1 Chat Mode
+If you use GitHub Copilot Chat in VS Code or compatible agentic VS Code wrapper, consider adding "Beast Mode 3.1" custom chat mode to increase agent reliability.
+
+Benefits observed:
+* Enforces an explicit plan & markdown todo list (higher task completion).
+* Prompts deeper self‑questioning (expected behavior, edge cases, dependencies).
+* Requires recursive web/documentation retrieval before coding (reduces hallucinated APIs).
+* Maintains lightweight memory file to avoid repeating past mistakes.
+
+Install (summary):
+1. Open the article: https://burkeholland.github.io/posts/beast-mode-3-1/
+2. Open the linked gist ("Get Beast Mode") and copy the raw markdown.
+3. In VS Code Chat: choose the chat mode dropdown → "Configure Modes" → "Create new custom chat mode file".
+4. Select the *User Data Folder* target (makes it global) and paste the prompt.
+5. Activate the new mode from the chat mode dropdown.
+
+Usage Tips:
+* Let it run through its todo list—interrupt only if it goes off track.
+* Provide concrete goals ("Add Playwright screenshot capture for all scenes").
+* When satisfied with a change batch, request a concise diff review before committing.
+* Treat it as a structured co‑pilot; still run local builds/tests to validate.
+
+Disclaimer: Beast Mode is an opinionated community workflow prompt, not an official Microsoft feature. Review contents before pasting and adapt to your org’s security & contribution guidelines.
+
+### 5.2 (Optional) Copilot Studio Web Chat React Integration
+This project includes a chat component (`CopilotChat.tsx`). For deeper customization or to re-create it from scratch, consult the official sample:
+https://github.com/microsoft/Agents/tree/main/samples/nodejs/copilotstudio-webchat-react
+
+High-Level Integration Steps (summary):
+1. In Copilot Studio, create / configure your agent (topics, actions, system messages).
+2. Enable a supported web channel and obtain the required token mechanism (e.g., Direct Line / Azure AI Studio provisioning depending on current platform guidance).
+3. Add required dependency from the sample (e.g., the Web Chat React package exported in the sample or `botframework-webchat` if using classic channel) and any auth helper utilities.
+4. Create a React wrapper component that:
+	* Acquires / refreshes a short-lived token via a lightweight backend (avoid exposing secrets in the client bundle).
+	* Passes styling, locale, and avatar / branding props to the WebChat component.
+	* Subscribes to activity events if you need telemetry (conversation start, handoff, errors).
+5. Embed the wrapper inside your SPA layout (e.g., in `SupportPortal.tsx`) and guard render until host + token are ready.
+
+Security & Ops Considerations:
+* Never commit channel secrets or Direct Line keys; proxy them server-side.
+* Rate-limit token issuance endpoints and apply CORS constraints.
+* Sanitize / log conversation events only after validating PII & compliance requirements.
+
+Styling Tips:
+* Use CSS variables or theme object to align with the portal’s dark/light toggle.
+* Provide a compact transcript height for smaller viewports; allow expansion.
+
+Fallback Strategy:
+If token fetch fails, display a minimal retry panel with a link to alternative support resources (email or knowledge base) to maintain user trust.
+
+Disclaimer: Channel availability and token acquisition steps can evolve; always verify the latest Copilot Studio / Bot Framework guidance before production deployment.
+
+### 5.3 (Optional) Entra App Registration (Delegated Access for Copilot Studio Token Proxy)
+If your Copilot Studio embedding scenario needs a secure server-side token exchange (recommended for production so you never ship static secrets), create an Entra (Azure AD) app registration and grant the minimum delegated permissions. This enables a lightweight proxy API to request short‑lived conversation or Direct Line style tokens on behalf of authenticated users.
+
+High-Level Steps (no secrets committed):
+1. Portal: https://entra.microsoft.com → Azure Active Directory → App registrations → New registration.
+	* Name: `OpsTrainingPortalChat` (example)
+	* Supported account types: Single tenant (unless multi-tenant is required).
+	* Redirect URI (SPA) (optional initially): `https://localhost:5173/` (match your dev Vite origin if you later perform auth flows client-side).
+2. Record the Application (client) ID and Directory (tenant) ID.
+3. Certificates & Secrets → New client secret (only if your backend will use confidential flow). Store value securely (Key Vault / pipeline secret). Do NOT commit to source control. Never paste IDs or secrets into the repo—populate them via environment variables (see `.env.example`).
+4. API Permissions → Add the required delegated permissions:
+	* `openid`, `profile`, `offline_access` (standard OpenID scopes if using MSAL for user sign-in).
+	* Copilot / conversation service specific delegated scopes as published in current Copilot Studio embedding guidance (names may evolve; consult latest docs before production). Avoid guessing—remove unused scopes.
+	* Any downstream API scopes your proxy must call (e.g., custom API, Graph minimal profile if needed).
+5. (If new permissions require admin consent) Grant admin consent for the tenant.
+6. (Backend Token Proxy) Implement a minimal endpoint (Node/Express or Azure Function) that:
+	* Validates the caller's bearer token (MSAL-acquired user token).
+	* Exchanges or generates a chat/session token via Copilot Studio / Bot channel API.
+	* Returns only the ephemeral token + expiration to the SPA.
+7. Client (`CopilotChat.tsx`) fetches `/api/chat/token` just-in-time and initializes the WebChat component with the ephemeral token.
+
+Populate environment variables (example keys provided in `.env.example`):
 ```
-Run:
-```powershell
-npm run dev
+ENTRA_CLIENT_ID=<GUID>
+ENTRA_TENANT_ID=<GUID>
+ENTRA_CLIENT_SECRET=<SECRET_VALUE>
+COPILOT_CHAT_SERVICE_BASE_URL=https://your-proxy-host
 ```
+
+Example (illustrative) Express route (do not commit secrets; read from process.env):
+```typescript
+app.get('/api/chat/token', async (req, res) => {
+  // 1. Validate user auth (e.g., via bearer token middleware/MSAL verification)
+	// 2. Call Copilot Studio / Bot channel token endpoint with app registration credentials from process.env.ENTRA_CLIENT_ID / SECRET
+  // 3. Return ephemeral token
+  res.json({ token: 'eyJ...shortLived', expiresInSeconds: 1800 });
+});
+```
+
+Security Recommendations:
+* Principle of least privilege: Only grant scopes actually required for token issuance.
+* Rotate client secrets; prefer certificate-based auth if confidential flows are supported. Maintain them in Azure Key Vault or GitHub Actions secrets.
+* Enforce CORS to allowed origins (Power Apps host domain + local dev origin).
+* Implement server-side rate limiting (token minting abuse protection).
+* Log token requests (excluding token values) for audit.
+
+Power Apps Hosting Considerations:
+* If you host the proxy externally (Azure App Service / Function), ensure network egress policies permit calls from users’ browsers.
+* If embedding inside Power Apps, keep your proxy base URL configurable via environment variable or build-time injection.
+
+Maintenance Checklist:
+* Review Entra audit logs for anomalous token minting spikes.
+* Periodically re-validate Copilot Studio permission naming (preview endpoints can change).
+* Add automated secret expiry alerts (Key Vault or GitHub OIDC workflows).
+
+Disclaimer: Exact Copilot Studio delegated scope names and token issuance endpoints may change while in preview. Always re-check official documentation before production enablement. Never commit tenant IDs or client secrets—use environment variables only.
 
 ---
 ## 6. Deployment / Publishing
-Build and push the compiled assets to the Power Apps host:
+Steps to push updated version to Power Apps environment:
 ```powershell
 npm run build
 pac code push
 ```
-The CLI returns a URL to open the hosted app inside Power Apps. You can also find it at https://make.powerapps.com (Apps list). Share it with licensed users.
+If successful, the console lists a Power Apps URL. Open it or navigate in the maker portal, then share with licensed users. Re-run after each release-worthy change.
 
-Re-publish whenever you change production code. (Preview: No Git pipeline or solution packaging integration yet.)
-
+---
 ---
 ## 7. Project Structure
 Path | Description
@@ -138,7 +293,6 @@ Path | Description
 `src/components/CopilotChat.tsx` | Chat assistant component
 `src/gsapHelpers.ts` | Animation helper utilities (stagger & pulse)
 `src/types/gsap-local.d.ts` | Minimal GSAP type declarations (shim)
-`docs/END_TO_END_TRANSCRIPT.md` | Detailed transcript & architectural narration
 
 ---
 ## 8. 3D & Animation Notes
@@ -163,13 +317,21 @@ Security Checklist:
 * Least-privilege for custom APIs.
 * Consider feature toggles for experimental 3D performance features.
 
+### 9.1 Security & Compliance Notes
+* **Authentication**: Delegated to the Power Apps host after publish (Entra ID). Local dev uses your existing auth context.
+* **DLP & Conditional Access**: Enforced similarly to canvas apps at launch time; connector consent dialogs appear unless suppressed by admin policy.
+* **Tenant Isolation / External Users**: Behavior matches canvas apps; ensure guest access policies align with data exposure.
+* **Telemetry**: Native platform app event telemetry limited for code apps (preview). Add custom Application Insights manually if required.
+* **External APIs**: Because CSP isn’t enforced yet, audit any third-party script or endpoint usage.
+
 ---
 ## 10. Troubleshooting
 Issue | Resolution
 -----|-----------
 Host “App timed out” | Confirm `PowerProvider.tsx` calls SDK `initialize()` and you ran `npm run build` before `pac code push`.
-8080 Port collision (local) | Taskkill /IM pac.exe
-Connector models stale | Re-run `pac code run` after adding/removing connectors.
+Stuck on "fetching your app" screen | Ensure a production build exists, `PowerProvider.tsx` succeeds, and no uncaught runtime errors appear in dev tools.
+Port collision (local dev) | Another process is using the Vite or `pac code run` port (commonly 5173 / 6000 range). Terminate lingering processes (e.g. `pac`), or change Vite port with `--port`.
+Connector models stale | Restart `pac code run` after adding/removing connectors; re-run build if generation artifacts changed.
 
 ---
 ## 11. Scripts Reference
@@ -184,20 +346,15 @@ Script | Purpose
 ## 12. Roadmap
 Area | Planned Enhancement
 -----|--------------------
-Connectors | Introduce Dataverse or REST connector for real metric data
-Guided Assembly | Step-by-step overlay & progress tracker
-Accessibility | Keyboard navigation through parts, ARIA live region for selection
-Performance | Geometry instancing for repeating hardware, animation pause on blur
-Telemetry | Custom Application Insights events (scene changes, quiz success)
-Internationalization | Externalize concept strings for multi-language support
-
+Connectors | Data Sources or REST API for real-time data
+Telemetry | Application Insights events
 ---
 ## 13. Reference Documentation
 * Architecture: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/architecture
 * Overview: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/overview
 * Quickstart: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/quickstart
 * PAC CLI Reference: https://learn.microsoft.com/en-us/power-platform/developer/cli/reference/code
-* Extended transcript: `docs/END_TO_END_TRANSCRIPT.md`
+* Historical extended transcript content has been merged here (the separate transcript file was removed to avoid duplication).
 
 ---
 ### License / Preview Notice

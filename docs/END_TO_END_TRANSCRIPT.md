@@ -13,7 +13,7 @@ Code apps let you host a fully custom Single Page App (SPA) built with a framewo
 ### 2. Layered Architecture
 Layer | Role | In This Project
 ------|------|---------------
-Your React/TS Code | UI, rendering, 3D scenes, quiz logic | Components under `src/components/*`
+Your React/TypeScript Code | UI, rendering, 3D scenes, quiz logic | Components under `src/components/*`
 Power Apps SDK | Initialization & connector model plumbing | `@microsoft/power-apps`, `PowerProvider.tsx`
 `power.config.json` | Generated metadata (environment + connectors) | Root file (auto-managed)
 Host (Power Apps) | Entra Authentication, application load lifecycle | Active after `pac code push`
@@ -23,20 +23,20 @@ Runtime data call path (once connectors added): Component → Generated Service 
 
 ---
 ### 3. Prerequisites
-Tools: VS Code, Node.JS (LTS version), Git, Power Platform Tools VSCode Extension. 
+Tools: VS Code, Node.JS (LTS version), Git, Power Platform Tools VSCode Extension. For non-coders, I also highly recommend using Github Copilot with Beast Mode and GPT-5 along with a few MCPs like Context7, Memory, SequentialThinking, Github, and MS Learn.
 Environment: Power Platform or Global admin needs to enable “Power Apps code apps” feature; users require a Power Apps Premium license (trial OK for evaluation).
 
 ---
 ### 4. Initialization Flow (From Quickstart → Customized App)
-1. Create or clone a Vite + React + TS project
-2. `npm install @microsoft/power-apps`
-3. `pac auth create --environment <ENV_ID>`
-4. `pac code init --displayName "LearningPortal3D"`
-5. Implement `PowerProvider.tsx` to call SDK `initialize()` then render root React tree
-6. Add UI scenes, GSAP for animation, and Three.JS for 3-D enablement
-7. Local dev: `npm run dev` (concurrently Vite + `pac code run`)
-8. Build: `npm run build`
-9. Publish: `pac code push` → obtain hosted URL
+1. Create or clone a Vite + React + TypeScript project.
+2. Add the Power Apps SDK dependency (see README for exact command syntax).
+3. Authenticate the PAC CLI to the target environment (refer to README command section).
+4. Initialize code app metadata with an appropriate display name.
+5. Implement `PowerProvider.tsx` so it calls the SDK `initialize()` before rendering the React tree.
+6. Add UI scenes, GSAP animation helpers, and Three.js 3D visualization modules.
+7. Start local development (dual run of Vite and the local host proxy). See README for the development command.
+8. Produce a production build (build command documented in README).
+9. Publish the compiled bundle to the Power Apps environment (push command in README) and note the returned URL.
 
 ---
 ### 5. Repository Structure (Key Files)
@@ -60,23 +60,8 @@ Path | Purpose
 - Adjustable scene brightness + theme toggle
 
 ---
-### 7. Core Commands (PowerShell Examples)
-```powershell
-# Authenticate to environment
-pac auth create --environment <ENVIRONMENT_GUID>
-
-# Initialize code app (once per project root)
-pac code init --displayName "Oil & Gas Operations Training Portal"
-
-# Install dependencies
-npm install
-
-# Local dev (if package.json dev script uses concurrently)
-npm run dev || pac code run  # (runs Vite + pac code run)
-
-# Build & publish
-npm run build || pac code push
-```
+### 7. Command Reference Location
+All shell commands have been consolidated into **README.md** (see Getting Started, Development Workflow, and Deployment sections). This transcript intentionally omits direct command blocks to avoid duplication.
 
 ---
 ### 8. Animation & 3D Implementation Notes
@@ -103,9 +88,9 @@ Some advanced security features (e.g., SAS IP restriction) not yet supported | R
 ---
 ### 11. Troubleshooting Quick Table
 Issue | Check / Fix
-------|------------
-Can't start due to port 8080 in use | taskkill /IM pac.exe
-Stuck "fetching your app" | Verify that you ran npm run build and there are no issues in PowerProvider.tsx
+-----|------------
+Can't start due to port 8080 in use | Terminate any lingering pac/Vite processes (process termination guidance in README)
+Stuck "fetching your app" | Ensure a build was produced and `PowerProvider.tsx` initializes the SDK without errors
 
 ---
 ### 12. Reference Links (Canonical Sources)

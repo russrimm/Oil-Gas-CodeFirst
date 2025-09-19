@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "start pac code run && vite",
-    "build": "tsc -b && vite build",
+  "dev": "node scripts/validateEnv.mjs && start pac code run && vite",
+  "build": "node scripts/validateEnv.mjs && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+  "preview": "vite preview",
+  "check:env": "node scripts/validateEnv.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^4.1.0",

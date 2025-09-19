@@ -1,7 +1,20 @@
-// Placeholder configuration. Replace with real values or overwrite this file in deployment.
+// Runtime configuration loaded from environment variables (via Vite import.meta.env) or left blank.
+// REAL VALUES SHOULD BE PROVIDED THROUGH .env (see .env.example) OR CI PIPELINE INJECTION.
+// This file intentionally contains no secrets or tenant-identifying GUIDs.
+
+interface ViteEnv {
+  [key: string]: string | boolean | undefined;
+}
+// Narrowed helper to safely read string env vars.
+const env = (name: string): string => {
+  const v = (import.meta as unknown as { env: ViteEnv }).env?.[name];
+  return typeof v === 'string' ? v : '';
+};
+
 export const copilotSettings = {
-  appClientId: '32c72b33-a331-4545-ad5a-6d2fdf961c4c',
-  tenantId: 'f33d7d7f-d7a8-49c9-9dfe-af8c9ca30123',
-  environmentId: '18571ae9-2db1-e2fc-97ef-2398a6944c06',
-  agentIdentifier: 'russ_pipelineKnowledgeAgent'
+  appClientId: env('VITE_COPILOT_APP_CLIENT_ID'),
+  tenantId: env('VITE_COPILOT_TENANT_ID'),
+  environmentId: env('VITE_COPILOT_ENVIRONMENT_ID'),
+  agentIdentifier: env('VITE_COPILOT_AGENT_IDENTIFIER'),
+  directConnectUrl: env('VITE_COPILOT_DIRECT_CONNECT_URL')
 };
