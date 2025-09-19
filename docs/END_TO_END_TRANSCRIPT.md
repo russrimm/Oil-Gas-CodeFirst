@@ -1,6 +1,4 @@
-## Energy Operations Learning Portal – End-to-End Build Transcript (Power Apps Code App Preview)
-
-This document captures the full explanatory transcript that was generated in the chat: from prerequisites through architecture, local development, publishing, and future enhancement guidance for the current React + Vite + Three.js + Power Apps SDK application.
+## Oil & Gas Operations Training Portal – 
 
 > NOTE: Power Apps *code apps* are in Preview. Don’t use in production without validating limitations and licensing. Links below point to official Microsoft Learn pages (always treat those as the authoritative source):
 > - Architecture: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/architecture
@@ -26,7 +24,7 @@ Runtime data call path (once connectors added): Component → Generated Service 
 ---
 ### 3. Prerequisites
 Tools: VS Code, Node.JS (LTS version), Git, Power Platform Tools VSCode Extension. 
-Environment: Admin enables “Power Apps code apps” feature; users need Power Apps Premium license (trial OK for evaluation).
+Environment: Power Platform or Global admin needs to enable “Power Apps code apps” feature; users require a Power Apps Premium license (trial OK for evaluation).
 
 ---
 ### 4. Initialization Flow (From Quickstart → Customized App)
@@ -35,7 +33,7 @@ Environment: Admin enables “Power Apps code apps” feature; users need Power 
 3. `pac auth create --environment <ENV_ID>`
 4. `pac code init --displayName "LearningPortal3D"`
 5. Implement `PowerProvider.tsx` to call SDK `initialize()` then render root React tree
-6. Add UI scenes (`SupportPortal`, metrics, quiz) and 3D modules (Three.js)
+6. Add UI scenes, GSAP for animation, and Three.JS for 3-D enablement
 7. Local dev: `npm run dev` (concurrently Vite + `pac code run`)
 8. Build: `npm run build`
 9. Publish: `pac code push` → obtain hosted URL
