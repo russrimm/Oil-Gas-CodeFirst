@@ -74,16 +74,15 @@ pac code init --displayName "Oil & Gas Operations Training Portal"
 npm install
 
 # Local dev (if package.json dev script uses concurrently)
-npm run dev   # (runs Vite + pac code run)
+npm run dev || pac code run  # (runs Vite + pac code run)
 
 # Build & publish
-npm run build
-pac code push
+npm run build || pac code push
 ```
 
 ---
 ### 8. Animation & 3D Implementation Notes
-- Three.js used directly (cameras, groups, procedural geometry) – no heavy abstraction.
+- Three.js & GSAP
 
 ---
 ### 9. Preview Limitations
@@ -108,25 +107,17 @@ Some advanced security features (e.g., SAS IP restriction) not yet supported | R
 Issue | Check / Fix
 ------|------------
 Can't start due to port 8080 in use | taskkill /IM pac.exe
+Stuck "fetching your app" | Verify that you ran npm run build and there are no issues in PowerProvider.tsx
 
 ---
-### 12. Extensibility Roadmap
-Area | Next Step
------|---------
-Connectors | Add Dataverse or a custom connector → generate service models
-Guided Assembly | Step-by-step overlay + progress HUD
-Accessibility | Keyboard navigation for 3D focus cycle; ARIA live announcements
-Telemetry | Add custom Application Insights events (app load, quiz interactions)
-
----
-### 13. Reference Links (Canonical Sources)
+### 12. Reference Links (Canonical Sources)
 - Architecture: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/architecture
 - Overview: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/overview
 - Quickstart: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/quickstart
 - PAC CLI reference: https://learn.microsoft.com/en-us/power-platform/developer/cli/reference/code
 
 ---
-### 14. License / Preview Reminder
+### 13. License / Preview Reminder
 All usage subject to Power Apps licensing. Preview capabilities may change or deprecate; re-check Microsoft Learn before production rollout.
 
 ---
