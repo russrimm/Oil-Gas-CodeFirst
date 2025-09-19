@@ -1,6 +1,6 @@
 <div align="center">
 
-# Energy Operations Learning Portal  
+# Oil & Gas Operations Training Portal  
 *(Power Apps Code App – Preview)*
 
 </div>
@@ -61,7 +61,7 @@ Quiz / Learn Modes | Clue-based identification & animated reveal vs. detail pane
 3D Pump Assembly | Explode/assemble sequence, impeller spin group, procedural blur texture
 Mechanical Accuracy | Bolt repositioning, shaft length & centerline alignment, seal + housing detail
 Metrics Simulation | Smoothly interpolated production metrics with pulse animations
-Chat Integration | Copilot-style embedded chat component
+Chat Integration | Copilot Studio embedded React chat component
 Brightness & Theme | Adjustable exposure (tone mapping) + dark/light toggle
 Focus Highlight | Emissive color & scale pulse on selection
 
@@ -71,9 +71,9 @@ Focus Highlight | Emissive color & scale pulse on selection
 Install / verify:
 * **Node.js** (LTS)
 * **Git**
-* **Power Platform CLI** (`pac`)
 * **Visual Studio Code**
-* (Optional) Power Platform Tools VS Code extension
+* **Power Platform Tools VS Code Extension** (for `pac cli`)
+
 
 Environment (Admin):
 1. Enable *Power Apps code apps* feature in target environment (Admin Center → Environment → Settings → Product → Features).
@@ -111,7 +111,6 @@ Run:
 ```powershell
 npm run dev
 ```
-Navigate to the local Vite URL (commonly http://localhost:5173) for live reload.
 
 ---
 ## 6. Deployment / Publishing
@@ -169,10 +168,8 @@ Security Checklist:
 Issue | Resolution
 -----|-----------
 Host “App timed out” | Confirm `PowerProvider.tsx` calls SDK `initialize()` and you ran `npm run build` before `pac code push`.
-Port collision (local) | Free the port or change Vite’s port (`vite --port 5174`).
+8080 Port collision (local) | Taskkill /IM pac.exe
 Connector models stale | Re-run `pac code run` after adding/removing connectors.
-Missing highlight reset | Ensure effect clearing emissive values runs on `focus` change (already implemented).
-3D performance dips | Reduce geometry segment counts; pause animation when tab hidden.
 
 ---
 ## 11. Scripts Reference
